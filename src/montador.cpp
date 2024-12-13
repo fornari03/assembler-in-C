@@ -19,21 +19,21 @@ int main(int argc, char *argv[]) {
     //     pre_process_file(file_name);
     // }
 
-    if (extensao) {
-        assemble(file_name);
+    if (!extensao) {
+        printf("Formato do arquivo inválido\n");
+        return 1;
     }
 
-    else {
-        printf("Formato do arquivo é inválido\n");
-    }
+    FILE *file = open_file(file_name);
+    pre_process(file);
+    // FILE *pre_file = open_file("pre_processed.pre");
+    // assemble(pre_file);
 
     return 0;
 }
 
 
-void assemble(char *file_name) {
-    FILE *file = open_file(file_name);
-    
+void assemble(FILE *file) {
     char *linha = NULL; // ponteiro para a linha
     size_t len = 0;
 

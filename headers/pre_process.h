@@ -1,9 +1,10 @@
 #ifndef PRE_PROCESS_H
 #define PRE_PROCESS_H
+#include <cstdio>
 
-void pre_process_file(char *file);
+void pre_process(FILE *file);
 void expand_macros(char *file);
-void remove_spaces(char *str);
-void remove_comments(char *str);
+char* remove_spaces(char *str);
+char* remove_comments(char *str);
 
 #endif

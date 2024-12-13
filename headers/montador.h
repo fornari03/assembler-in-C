@@ -2,6 +2,6 @@
 #define MONTADOR_H
 
 int main(int argc, char *argv[]);
-void assemble(char *arquivo);
+void assemble(FILE *file);
 
 #endif

@@ -4,6 +4,7 @@
 
 int check_file_extension(char *file);
 FILE* open_file(char *file);
-void write_file(char *file, char *code);
+FILE* create_file(char *file);
+void write_file(FILE* file, char *code);
 
 #endif

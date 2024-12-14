@@ -30,3 +30,20 @@ FILE* open_file(char *file) {
     }
     return opened_file;
 }
+
+FILE* create_file(char *file) {
+    FILE* created_file = fopen(file, "w");
+
+    if (created_file == NULL) {
+        printf("Erro\n");
+    }
+
+    else {
+        printf("Criou arquivo %s\n", file);
+    }
+    return created_file;
+}
+
+void write_file(FILE* file, char *code) {
+    fputs(code, file);
+}   

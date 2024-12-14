@@ -3,7 +3,7 @@
 #include <cstdio>
 
 void pre_process(FILE *file);
-void expand_macros(char *file);
+void expand_macros(char *str);
 char* remove_spaces(char *str);
 char* remove_comments(char *str);
 

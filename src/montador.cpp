@@ -27,7 +27,8 @@ int main(int argc, char *argv[]) {
     FILE *file = open_file(file_name);
     pre_process(file);
 
-    FILE *pre_file = open_file("pre_processed.pre");
+    char pre_file_name[] = "pre_processed.pre";
+    FILE *pre_file = open_file(pre_file_name);
     // assemble(pre_file);
 
     return 0;

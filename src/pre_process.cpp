@@ -7,7 +7,8 @@ void pre_process(FILE *file) {
     char *linha = NULL; // ponteiro para a linha
     size_t len = 0;
 
-    FILE *pre_file = create_file("pre_processed.pre");
+    char pre_file_name[] = "pre_processed.pre";
+    FILE *pre_file = create_file(pre_file_name);
 
     while (getline(&linha, &len, file) != -1) {
         // TODO: expand_macros(linha);

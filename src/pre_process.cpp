@@ -54,11 +54,19 @@ char* remove_spaces(char *str, bool last_line) {
 
     for (; *read != '\0'; read++) {
         if (isspace(*read)) {
-            if (!space_found) {
-                *write++ = ' '; // deixa só 1 espaço
+            if (!space_found && *(read + 1) != ',' && *(write - 1) != ',') {
+                *write++ = ' '; // deixa só um espaço se não for vírgula
                 space_found = true;
             }
-        }
+        } 
+        else if (*read == ',') {
+            // tira todos espaços antes da vírgula
+            while (write > str && isspace(*(write - 1))) {
+                write--;
+            }
+            *write++ = ','; // escreve a vírgula
+            space_found = true;
+        } 
         else {
             *write++ = *read; // se não é espaço, não mexe
             space_found = false;

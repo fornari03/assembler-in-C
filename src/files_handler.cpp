@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "files_handler.h"
 
 int check_file_extension(char *file) {
@@ -15,6 +16,17 @@ int check_file_extension(char *file) {
     else {
         return 0;
     }
+}
+
+char* change_file_extension(char *file, char *new_extension) {
+    char *extensao = strrchr(file, '.');
+    char *new_file = (char*) malloc(strlen(file) + strlen(new_extension) + 1);
+
+    strncpy(new_file, file, extensao - file);
+    new_file[extensao - file] = '\0';
+    strcat(new_file, new_extension);
+
+    return new_file;
 }
 
 

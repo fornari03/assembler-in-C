@@ -3,11 +3,13 @@
 #include "pre_process.h"
 #include "files_handler.h"
 
-void pre_process(FILE *file) {
+void pre_process(char *file_name) {
+    FILE *file = open_file(file_name);
     char *linha = NULL; // ponteiro para a linha
     size_t len = 0;
 
-    char pre_file_name[] = "pre_processed.pre";
+    char ext[] = ".pre";
+    char* pre_file_name = change_file_extension(file_name, ext);
     FILE *pre_file = create_file(pre_file_name);
 
     while (getline(&linha, &len, file) != -1) {

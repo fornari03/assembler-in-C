@@ -7,17 +7,29 @@ void pre_process(char *file_name) {
     FILE *file = open_file(file_name);
     char *linha = NULL; // ponteiro para a linha
     size_t len = 0;
+    bool last_line = false;
 
     char ext[] = ".pre";
     char* pre_file_name = change_file_extension(file_name, ext);
     FILE *pre_file = create_file(pre_file_name);
 
     while (getline(&linha, &len, file) != -1) {
-        // TODO: expand_macros(linha);
+        off_t current_pos = ftell(file);
+        char *next_line = NULL;
+        size_t next_len = 0;
+
+        if (getline(&next_line, &next_len, file) == -1) {
+            last_line = true;
+        } 
+        else
+            fseek(file, current_pos, SEEK_SET);
+        free(next_line);
+
         linha = remove_comments(linha);
-        linha = remove_spaces(linha);
-        write_file(pre_file, linha);
+        linha = remove_spaces(linha, last_line);
+        if (!isspace(*linha)) write_file(pre_file, linha);
     }
+
     free(linha);
 
     fclose(file);
@@ -28,7 +40,7 @@ void expand_macros(char *file) {
 
 }
 
-char* remove_spaces(char *str) {
+char* remove_spaces(char *str, bool last_line) {
     if (!str) return str;
 
     char *read = str; // ponteiro pra leitura
@@ -58,7 +70,7 @@ char* remove_spaces(char *str) {
         write--;
     }
 
-    *write++ = '\n';
+    if (!last_line) *write++ = '\n';
     *write = '\0';
 
     return str;

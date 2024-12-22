@@ -43,13 +43,18 @@ vector<char*> execute_directive(vector<char*> tokens) {
             char* out = NULL;
             if (strlen(tokens[1]) > 2 && tokens[1][0] == '0' && (tokens[1][1] == 'x' || tokens[1][1] == 'X')) {
                 arg = (int)strtol(tokens[1], NULL, 16);
-                sprintf(out, "%d", arg);
+                sprintf(out, "%d", arg); // TODO verificar se é isso mesmo
                 code_obj.push_back(out);
             }
             else {
                 arg = atoi(tokens[1]);
-                sprintf(out, "%d", arg);
-                code_obj.push_back(out);
+                if (arg == 0 && tokens[1][0] != '0') {
+                    printf("ERRO SINTÁTICO: CONST tem que ser numérico\n");
+                    // TODO: erro sintático
+                }
+                else {
+                    code_obj.push_back(tokens[1]);
+                }
             }
             free(out);
         }

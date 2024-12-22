@@ -8,6 +8,7 @@
 #include "pre_process.h"
 #include "files_handler.h"
 #include "opcodes.h"
+#include "diretivas.h"
 
 using namespace std;
 
@@ -72,13 +73,15 @@ void assemble(char *file_name) {
                 contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
             }
             else {
-                // if (is_directive(token[0])) {
-                //     execute_directive(tokens);
-                // }
-                // else {
-                //     printf("ERRO SINTÁTICO: linha %d\n", contador_linha);
-                //     // TODO: erro sintático
-                // }
+                if (is_directive(tokens[0])) {
+                    int n = get_directive_size(tokens);
+                    printf("%d\n", n);
+                    contador_posicao += get_directive_size(tokens);
+                }
+                else {
+                    printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
+                    // TODO: erro sintático
+                }
             }
         }
         contador_linha++;

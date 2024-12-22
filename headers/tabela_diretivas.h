@@ -1,6 +1,0 @@
-#ifndef TABELA_DIRETIVAS_H
-#define TABELA_DIRETIVAS_H
-
-
-
-#endif

@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "montador.h"
 #include "pre_process.h"
 #include "files_handler.h"
+
+using namespace std;
 
 int main(int argc, char *argv[]) {
     // TODO: argc deve ser usado para a ligação
@@ -37,13 +40,51 @@ void assemble(char *file_name) {
     char ext[] = ".obj";
     char* obj_file_name = change_file_extension(file_name, ext);
 
+    // PRIMEIRA PASSAGEM
+    int contador_posicao = 0;
+    int contador_linha = 1;
     while (getline(&linha, &len, file) != -1) {
-        continue;
-        // TODO: implementar a montagem
+        vector<char*> toks = split_line(linha, &contador_posicao);
+        if (is_label(toks[0])) {
+            if (validate_label(toks[0])) {
+                // TODO: coloca label na tabela de símbolos
+            }
+            else {
+                printf("ERRO SEMÂNTICO: linha %d\n", contador_linha);
+                // TODO: erro semântico
+            }
+        }
+        contador_linha++;
     }
+
     free(linha);
 
     fclose(file);
 
     // TODO: implementar a escrita do arquivo objeto (.obj)
+}
+
+vector<char*> split_line(char *line, int *count) {
+    vector<char*> tokens;
+    char *tok = strtok(line, " ,\n");
+    while (tok != NULL) {
+        tokens.push_back(tok);
+        tok = strtok(NULL, " ,\n");
+        (*count)++;
+    }
+    return tokens;
+}
+
+bool validate_label(char *label) {
+    label[strlen(label) - 1] = '\0';
+    if (!isalpha(label[0]) && label[0] != '_') return false;
+
+    for (char *ptr = label; *ptr != '\0'; ptr++) {
+        if (!isalnum(*ptr) && *ptr != '_') return false;
+    }
+    return true;
+}
+
+bool is_label(char *token) {
+    return token[strlen(token) - 1] == ':';
 }

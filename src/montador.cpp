@@ -75,8 +75,6 @@ void assemble(char *file_name) {
             }
             else {
                 if (is_directive(tokens[0])) {
-                    int n = get_directive_size(tokens);
-                    printf("%d\n", n);
                     contador_posicao += get_directive_size(tokens);
                 }
                 else {
@@ -89,10 +87,6 @@ void assemble(char *file_name) {
     }
 
     fclose(file);
-
-    for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
-        printf("%s: %d\n", it->first.c_str(), it->second);
-    }
 
 
     // SEGUNDA PASSAGEM
@@ -120,7 +114,6 @@ void assemble(char *file_name) {
                             // TODO: erro semântico
                         }
                     }
-                    obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
                 }
                 else {
                     printf("ERRO SINTÁTICO (número de operandos incorreto): linha %d\n", contador_linha);

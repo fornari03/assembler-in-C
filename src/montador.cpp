@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <map>
+#include <string>
 #include "montador.h"
 #include "pre_process.h"
 #include "files_handler.h"
+#include "opcodes.h"
 
 using namespace std;
 
@@ -43,34 +46,59 @@ void assemble(char *file_name) {
     // PRIMEIRA PASSAGEM
     int contador_posicao = 0;
     int contador_linha = 1;
+    map<string, int> symbol_table;
+
     while (getline(&linha, &len, file) != -1) {
-        vector<char*> toks = split_line(linha, &contador_posicao);
-        if (is_label(toks[0])) {
-            if (validate_label(toks[0])) {
-                // TODO: coloca label na tabela de símbolos
+        vector<char*> tokens = split_line(linha);
+        if (is_label(tokens[0])) {
+            if (validate_label(tokens[0])) {
+                string label = tokens[0];
+                if (symbol_table.find(label) == symbol_table.end()) {
+                    symbol_table[label] = contador_posicao;
+                }
+                else {
+                    printf("ERRO SEMÂNTICO (label redefinida): linha %d\n", contador_linha);
+                    // TODO: erro semântico
+                }
             }
             else {
                 printf("ERRO SEMÂNTICO: linha %d\n", contador_linha);
                 // TODO: erro semântico
             }
+            tokens.erase(tokens.begin());
+        }
+        if (tokens.size() > 0) { // se linha não é só a label
+            if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
+                contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
+            }
+            else {
+                // if (is_directive(token[0])) {
+                //     execute_directive(tokens);
+                // }
+                // else {
+                //     printf("ERRO SINTÁTICO: linha %d\n", contador_linha);
+                //     // TODO: erro sintático
+                // }
+            }
         }
         contador_linha++;
     }
+        free(linha);
 
-    free(linha);
+        fclose(file);
 
-    fclose(file);
-
+        for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
+            printf("%s: %d\n", it->first.c_str(), it->second);
+        }
     // TODO: implementar a escrita do arquivo objeto (.obj)
 }
 
-vector<char*> split_line(char *line, int *count) {
+vector<char*> split_line(char *line) {
     vector<char*> tokens;
     char *tok = strtok(line, " ,\n");
     while (tok != NULL) {
         tokens.push_back(tok);
         tok = strtok(NULL, " ,\n");
-        (*count)++;
     }
     return tokens;
 }

@@ -32,12 +32,14 @@ void pre_process(char *file_name) {
         if (strstr(to_upper(linha), section_text) && !sections_found) {
             printf("section text found\n");
             sections_found = true;
+            continue;
         }
 
         if (strstr(to_upper(linha), section_data) && !sections_found) {
             printf("section data found\n");
             sections_found = true;
             data_first = true;
+            continue;
         }
 
         if (data_first && !strstr(to_upper(linha), section_text) && !section_text_found) {
@@ -48,7 +50,13 @@ void pre_process(char *file_name) {
         }
         else {
             printf("else\n");
-            if (strstr(to_upper(linha), section_text)) section_text_found = true;
+            if (strstr(to_upper(linha), section_text)) {
+                section_text_found = true;
+                continue;
+            }
+            if (strstr(to_upper(linha), section_data)) {
+                continue;
+            }
             if (getline(&next_line, &next_len, file) == -1 && !data_first) {
                 last_line = true;
             } 

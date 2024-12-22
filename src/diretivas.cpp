@@ -27,14 +27,13 @@ vector<char*> execute_directive(vector<char*> tokens) {
     vector<char*> code_obj;
     char* token = to_upper(tokens[0]);
     if (!strcmp(token, "SPACE")) {
-        char c[] = "00";
         if (tokens.size() > 1) {
             for (int i = 0; i < atoi(tokens[1]); i++) {
-                code_obj.push_back(c);
+                code_obj.push_back((char*)"0");
             }
         }
         else {
-            code_obj.push_back(c);
+            code_obj.push_back((char*)"0");
         }
     }
     else if (!strcmp(token, "CONST")) {

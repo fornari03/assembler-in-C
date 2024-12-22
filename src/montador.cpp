@@ -9,6 +9,7 @@
 #include "files_handler.h"
 #include "opcodes.h"
 #include "diretivas.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -86,14 +87,66 @@ void assemble(char *file_name) {
         }
         contador_linha++;
     }
-        free(linha);
 
-        fclose(file);
+    fclose(file);
 
-        for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
-            printf("%s: %d\n", it->first.c_str(), it->second);
+    for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
+        printf("%s: %d\n", it->first.c_str(), it->second);
+    }
+
+
+    // SEGUNDA PASSAGEM
+    file = open_file(file_name);
+    linha = NULL;
+    len = 0;
+    contador_posicao = 0;
+    contador_linha = 1;
+    vector<string> obj_code;
+
+    while (getline(&linha, &len, file) != -1) {
+        vector<char*> tokens = split_line(linha);
+        if (is_label(tokens[0])) tokens.erase(tokens.begin());
+        if (tokens.size() > 0) {
+            if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
+                contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
+                if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
+                    obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
+                    for (size_t i = 1; i < tokens.size(); i++) {
+                        if (symbol_table.find(tokens[i]) != symbol_table.end()) {
+                            obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
+                        }
+                        else {
+                            printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
+                            // TODO: erro semântico
+                        }
+                    }
+                    obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
+                }
+                else {
+                    printf("ERRO SINTÁTICO (número de operandos incorreto): linha %d\n", contador_linha);
+                    // TODO: erro sintático
+                }
+            }
+            else {
+                if (is_directive(tokens[0])) {
+                    contador_posicao += get_directive_size(tokens);
+                    vector<char*> obj = execute_directive(tokens);
+                    obj_code.insert(obj_code.end(), obj.begin(), obj.end());
+                }
+                else {
+                    printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
+                }
+            }
         }
-    // TODO: implementar a escrita do arquivo objeto (.obj)
+        contador_linha++;
+    }
+
+    FILE *obj_file = create_file(obj_file_name);
+    char space[] = " ";
+    for (size_t i = 0; i < obj_code.size(); i++) {
+        write_file(obj_file, (char*)obj_code[i].c_str());
+        write_file(obj_file, space);
+    }
 }
 
 vector<char*> split_line(char *line) {
@@ -119,3 +172,4 @@ bool validate_label(char *label) {
 bool is_label(char *token) {
     return token[strlen(token) - 1] == ':';
 }
+

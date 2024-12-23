@@ -5,10 +5,13 @@
 #include <stdio.h>
 
 char* to_upper(char *str) {
-    for (char *ptr = str; *ptr != '\0'; ptr++) {
-        *ptr = toupper(*ptr);
+    char *copy = (char*)malloc(strlen(str) + 1);
+    for (size_t i = 0; str[i] != '\0'; i++) {
+        copy[i] = toupper((unsigned char)str[i]);
     }
-    return str;
+    copy[strlen(str)] = '\0';
+
+    return copy;
 }
 
 char* int_to_string(int value) {

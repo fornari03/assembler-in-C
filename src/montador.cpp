@@ -54,6 +54,7 @@ void assemble(char *file_name) {
         vector<char*> tokens = split_line(linha);
         if (is_label(tokens[0])) {
             if (validate_symbol(tokens[0])) {
+                tokens[0] = to_upper(tokens[0]);
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
                     symbol_table[label] = contador_posicao;
@@ -70,6 +71,7 @@ void assemble(char *file_name) {
             tokens.erase(tokens.begin());
         }
         if (tokens.size() > 0) { // se linha não é só a label
+            tokens[0] = to_upper(tokens[0]);
             if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
                 contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
             }
@@ -101,12 +103,14 @@ void assemble(char *file_name) {
         vector<char*> tokens = split_line(linha);
         if (is_label(tokens[0])) tokens.erase(tokens.begin());
         if (tokens.size() > 0) {
+            tokens[0] = to_upper(tokens[0]);
             if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
                 contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
                 if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
                     obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
                     for (size_t i = 1; i < tokens.size(); i++) {
                         if (validate_symbol(tokens[i])) {
+                            tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
                             }

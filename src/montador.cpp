@@ -53,7 +53,7 @@ void assemble(char *file_name) {
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
         if (is_label(tokens[0])) {
-            if (validate_symbol(tokens[0])) {
+            if (validate_symbol(tokens[0], true)) {
                 tokens[0] = to_upper(tokens[0]);
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
@@ -109,10 +109,24 @@ void assemble(char *file_name) {
                 if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
                     obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
                     for (size_t i = 1; i < tokens.size(); i++) {
-                        if (validate_symbol(tokens[i])) {
+                        if (validate_symbol(tokens[i], false)) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
+                                //printf("symbol_table[%s]: %d\n", tokens[i], symbol_table[tokens[i]]);
+                            }
+                            else if (strchr(tokens[i], '+')) {
+                                char *ptr = strchr(tokens[i], '+');
+                                *ptr = '\0';
+                                string symbol = tokens[i];
+                                string number = ptr + 1;
+                                if (symbol_table.find(symbol) != symbol_table.end()) {
+                                    obj_code.push_back(int_to_string(symbol_table[symbol] + atoi(number.c_str())));
+                                }
+                                else {
+                                    printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
+                                    // TODO: erro semântico
+                                }
                             }
                             else {
                                 printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
@@ -170,15 +184,45 @@ vector<char*> split_line(char *line) {
     return tokens;
 }
 
-bool validate_symbol(char *symbol) {
-    if (is_label(symbol))
+bool validate_symbol(char *symbol, bool is_label) {
+    if (is_label) {
         symbol[strlen(symbol) - 1] = '\0';
-    if (!isalpha(symbol[0]) && symbol[0] != '_') return false;
+        if (!isalpha(symbol[0]) && symbol[0] != '_') return false;
 
-    for (char *ptr = symbol; *ptr != '\0'; ptr++) {
-        if (!isalnum(*ptr) && *ptr != '_') return false;
+        for (char *ptr = symbol; *ptr != '\0'; ptr++) {
+            if (!isalnum(*ptr) && *ptr != '_') return false;
+        }
+        return true;
     }
+    char *copy = strdup(symbol);
+    if (!strchr(copy, '+')) {
+        if (!isalpha(symbol[0]) && symbol[0] != '_') return false;
+
+        for (char *ptr = symbol; *ptr != '\0'; ptr++) {
+            if (!isalnum(*ptr) && *ptr != '_') return false;
+        }
+        return true;
+    }
+    // verifica se antes do + é um símbolo válido e se depois é um número
+    char *ptr = strchr(copy, '+');
+    *ptr = '\0';
+    if (!validate_symbol(copy, false)) {
+        free(copy);
+        return false;
+    }
+    if (!isdigit(*(ptr + 1))) {
+        free(copy);
+        return false;
+    }
+    while (*++ptr != '\0') {
+        if (!isdigit(*ptr)) {
+            free(copy);
+            return false;
+        }
+    }
+    free(copy);
     return true;
+
 }
 
 bool is_label(char *token) {

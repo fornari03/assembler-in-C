@@ -6,7 +6,17 @@
 
 bool is_directive(char *token) {
     token = to_upper(token);
-    return !strcmp(token, "SPACE") || !strcmp(token, "CONST");
+    return !strcmp(token, "SPACE") || !strcmp(token, "CONST") || !strcmp(token, "EXTERN") || !strcmp(token, "PUBLIC") || !strcmp(token, "BEGIN") || !strcmp(token, "END");
+}
+
+bool is_begin(char *token) {
+    token = to_upper(token);
+    return !strcmp(token, "BEGIN");
+}
+
+bool is_extern(char *token) {
+    token = to_upper(token);
+    return !strcmp(token, "EXTERN");
 }
 
 int get_directive_size(vector<char*> tokens) {
@@ -19,6 +29,10 @@ int get_directive_size(vector<char*> tokens) {
     }
     else if (!strcmp(token, "CONST")) {
         return 1;
+    }
+    else if (!strcmp(token, "EXTERN") || !strcmp(token, "PUBLIC")
+            || !strcmp(token, "BEGIN") || !strcmp(token, "END")) {
+        return 0;
     }
     return -10000;
 }

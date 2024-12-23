@@ -48,7 +48,8 @@ void assemble(char *file_name) {
     // PRIMEIRA PASSAGEM
     int contador_posicao = 0;
     int contador_linha = 1;
-    map<string, int> symbol_table;
+    map<string, pair<int, bool>> symbol_table;
+    bool is_module = false;
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
@@ -57,7 +58,10 @@ void assemble(char *file_name) {
                 tokens[0] = to_upper(tokens[0]);
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
-                    symbol_table[label] = contador_posicao;
+                    symbol_table[label].first = contador_posicao;
+                    if (is_extern(tokens[1]) && is_module)
+                        symbol_table[label].second = true;
+                        // ISSUE: considerar um continue aqui
                 }
                 else {
                     printf("ERRO SEMÂNTICO (label redefinida): linha %d\n", contador_linha);
@@ -83,6 +87,9 @@ void assemble(char *file_name) {
                 else {
                     if (is_directive(tokens[0])) {
                         contador_posicao += get_directive_size(tokens);
+                        if (is_begin(tokens[0])) {
+                            is_module = true;
+                        }
                     }
                     else {
                         printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
@@ -95,6 +102,9 @@ void assemble(char *file_name) {
     }
 
     fclose(file);
+
+
+
 
 
     // SEGUNDA PASSAGEM
@@ -118,7 +128,7 @@ void assemble(char *file_name) {
                         if (validate_symbol(tokens[i], false)) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
-                                obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
+                                obj_code.push_back(int_to_string(symbol_table[tokens[i]].first));
                                 //printf("symbol_table[%s]: %d\n", tokens[i], symbol_table[tokens[i]]);
                             }
                             else if (strchr(tokens[i], '+')) {
@@ -127,7 +137,7 @@ void assemble(char *file_name) {
                                 string symbol = tokens[i];
                                 string number = ptr + 1;
                                 if (symbol_table.find(symbol) != symbol_table.end()) {
-                                    obj_code.push_back(int_to_string(symbol_table[symbol] + atoi(number.c_str())));
+                                    obj_code.push_back(int_to_string(symbol_table[symbol].first + atoi(number.c_str())));
                                 }
                                 else {
                                     printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
@@ -160,7 +170,7 @@ void assemble(char *file_name) {
                     printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
                 }
             }
-        }
+        }   
         contador_linha++;
     }
 

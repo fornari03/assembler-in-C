@@ -53,7 +53,7 @@ void assemble(char *file_name) {
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
         if (is_label(tokens[0])) {
-            if (validate_label(tokens[0])) {
+            if (validate_symbol(tokens[0])) {
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
                     symbol_table[label] = contador_posicao;
@@ -106,12 +106,18 @@ void assemble(char *file_name) {
                 if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
                     obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
                     for (size_t i = 1; i < tokens.size(); i++) {
-                        if (symbol_table.find(tokens[i]) != symbol_table.end()) {
-                            obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
+                        if (validate_symbol(tokens[i])) {
+                            if (symbol_table.find(tokens[i]) != symbol_table.end()) {
+                                obj_code.push_back(int_to_string(symbol_table[tokens[i]]));
+                            }
+                            else {
+                                printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
+                                // TODO: erro semântico
+                            }
                         }
                         else {
-                            printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
-                            // TODO: erro semântico
+                            printf("ERRO LÉXICO (símbolo inválido): linha %d\n", contador_linha);
+                            // TODO: erro léxico
                         }
                     }
                 }
@@ -144,19 +150,28 @@ void assemble(char *file_name) {
 
 vector<char*> split_line(char *line) {
     vector<char*> tokens;
-    char *tok = strtok(line, " ,\n");
-    while (tok != NULL) {
-        tokens.push_back(tok);
-        tok = strtok(NULL, " ,\n");
+    char *tok = strtok(line, " \n");
+    if (!strcmp(to_upper(tok), (char*)"COPY")) {
+        while (tok != NULL) {
+            tokens.push_back(tok);
+            tok = strtok(NULL, ", \n");
+        }
+    }
+    else {
+        while (tok != NULL) {
+            tokens.push_back(tok);
+            tok = strtok(NULL, " \n");
+        }
     }
     return tokens;
 }
 
-bool validate_label(char *label) {
-    label[strlen(label) - 1] = '\0';
-    if (!isalpha(label[0]) && label[0] != '_') return false;
+bool validate_symbol(char *symbol) {
+    if (is_label(symbol))
+        symbol[strlen(symbol) - 1] = '\0';
+    if (!isalpha(symbol[0]) && symbol[0] != '_') return false;
 
-    for (char *ptr = label; *ptr != '\0'; ptr++) {
+    for (char *ptr = symbol; *ptr != '\0'; ptr++) {
         if (!isalnum(*ptr) && *ptr != '_') return false;
     }
     return true;

@@ -106,7 +106,7 @@ char* remove_spaces(char *str, bool last_line) {
 
     for (; *read != '\0'; read++) {
         if (isspace(*read)) {
-            if (!space_found && *(read + 1) != ',' && *(write - 1) != ',') {
+            if (!space_found && *(read + 1) != ',' && *(write - 1) != ',' && *(read + 1) != '+' && *(write - 1) != '+') {
                 *write++ = ' '; // deixa só um espaço se não for vírgula
                 space_found = true;
             }
@@ -119,6 +119,14 @@ char* remove_spaces(char *str, bool last_line) {
             *write++ = ',';
             space_found = true;
         } 
+        else if (*read == '+') {
+            // tira todos espaços antes do +
+            while (write > str && isspace(*(write - 1))) {
+                write--;
+            }
+            *write++ = '+';
+            space_found = true;
+        }
         else {
             *write++ = *read;
             space_found = false;

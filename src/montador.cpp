@@ -72,16 +72,22 @@ void assemble(char *file_name) {
         }
         if (tokens.size() > 0) { // se linha não é só a label
             tokens[0] = to_upper(tokens[0]);
-            if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
-                contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
+            if (is_label(tokens[0])) {
+                printf("ERRO SINTÁTICO (label dobrada na mesma linha): linha %d\n", contador_linha);
+                // TODO: erro sintático
             }
             else {
-                if (is_directive(tokens[0])) {
-                    contador_posicao += get_directive_size(tokens);
+                if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
+                    contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
                 }
                 else {
-                    printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
-                    // TODO: erro sintático
+                    if (is_directive(tokens[0])) {
+                        contador_posicao += get_directive_size(tokens);
+                    }
+                    else {
+                        printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
+                        // TODO: erro sintático
+                    }
                 }
             }
         }

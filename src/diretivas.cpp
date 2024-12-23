@@ -20,7 +20,7 @@ int get_directive_size(vector<char*> tokens) {
     else if (!strcmp(token, "CONST")) {
         return 1;
     }
-    return -1;
+    return -10000;
 }
 
 vector<char*> execute_directive(vector<char*> tokens) {

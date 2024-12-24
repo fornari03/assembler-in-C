@@ -50,6 +50,7 @@ void assemble(char *file_name) {
     int contador_linha = 1;
     map<string, pair<int, bool>> symbol_table;
     bool is_module = false;
+    map<string, int> definition_table;
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
@@ -90,6 +91,9 @@ void assemble(char *file_name) {
                         if (is_begin(tokens[0])) {
                             is_module = true;
                         }
+                        else if (is_public(tokens[0])) {
+                            definition_table[to_upper(tokens[1])] = -1;
+                        }
                     }
                     else {
                         printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
@@ -103,8 +107,18 @@ void assemble(char *file_name) {
 
     fclose(file);
 
+    for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
+        definition_table[it->first] = symbol_table[it->first].first;
+    }
 
 
+    for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
+        printf("definition_table[%s]: %d\n", it->first.c_str(), it->second);
+    }
+
+    for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
+        printf("symbol_table[%s]: %d, %d\n", it->first.c_str(), it->second.first, it->second.second);
+    }
 
 
     // SEGUNDA PASSAGEM

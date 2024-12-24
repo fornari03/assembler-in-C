@@ -19,6 +19,11 @@ bool is_extern(char *token) {
     return !strcmp(token, "EXTERN");
 }
 
+bool is_public(char *token) {
+    token = to_upper(token);
+    return !strcmp(token, "PUBLIC");
+}
+
 int get_directive_size(vector<char*> tokens) {
     char* token = to_upper(tokens[0]);
     if (!strcmp(token, "SPACE")) {

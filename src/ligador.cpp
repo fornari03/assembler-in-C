@@ -40,6 +40,7 @@ void link (char** files_names) {
         FILE *file = open_file(files_names[i]);
         char *line = NULL;
         size_t len = 0;
+        int code_size = linked_code.size();
         while (getline(&line, &len, file) != -1) {
             if (line[0] == 'D') {
                 vector<char*> label_def = split_line(line);
@@ -51,19 +52,19 @@ void link (char** files_names) {
             }
             else if (line[0] == 'R') {
                 vector<char*> nums = split_line(line);
-                for (size_t i = 1; i < nums.size(); i++) {
-                    global_reloc_bit_map.push_back(nums[i]);
+                for (size_t j = 1; j < nums.size(); j++) {
+                    global_reloc_bit_map.push_back(nums[j]);
                 }
             }
             else {
                 vector<char*> nums = split_line(line);
                 fator_correcao.push_back((int)nums.size());
-                for (size_t i = 0; i < nums.size(); i++) {
-                    if (global_reloc_bit_map[i] == "1") {
-                        linked_code.push_back(atoi(nums[i])+fator_correcao[i]); // ja aplica o fator de correção pra endereços relativos
+                for (size_t j = 0; j < nums.size(); j++) {
+                    if (global_reloc_bit_map[(int)j+code_size] == "1") {
+                        linked_code.push_back(atoi(nums[j])+fator_correcao[i]); // ja aplica o fator de correção pra endereços relativos
                     }
                     else
-                        linked_code.push_back(atoi(nums[i]));
+                        linked_code.push_back(atoi(nums[j]));
                 }
             }
         }
@@ -75,7 +76,7 @@ void link (char** files_names) {
     }
 
     for (auto use : global_use_table) {
-        linked_code[use.second] = global_definition_table[use.first];
+        linked_code[use.second] += global_definition_table[use.first];
     }
 
     char ext[] = ".e";

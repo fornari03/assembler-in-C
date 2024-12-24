@@ -58,11 +58,9 @@ vector<char*> execute_directive(vector<char*> tokens) {
     else if (!strcmp(token, "CONST")) {
         if (tokens.size() == 2) {
             int arg;
-            char* out = NULL;
             if (strlen(tokens[1]) > 2 && tokens[1][0] == '0' && (tokens[1][1] == 'x' || tokens[1][1] == 'X')) {
                 arg = (int)strtol(tokens[1], NULL, 16);
-                sprintf(out, "%d", arg); // TODO verificar se é isso mesmo
-                code_obj.push_back(out);
+                code_obj.push_back(int_to_string(arg));
             }
             else {
                 arg = atoi(tokens[1]);
@@ -74,7 +72,6 @@ vector<char*> execute_directive(vector<char*> tokens) {
                     code_obj.push_back(tokens[1]);
                 }
             }
-            free(out);
         }
         else {
             printf("ERRO SINTÁTICO: quantidade de argumentos de CONST errada\n");

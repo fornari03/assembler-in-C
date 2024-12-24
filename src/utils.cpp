@@ -25,3 +25,21 @@ char* int_to_string(int value) {
 
     return buffer;
 }
+
+vector<char*> split_line(char *line) {
+    vector<char*> tokens;
+    char *tok = strtok(line, " \n");
+    if (!strcmp(to_upper(tok), (char*)"COPY")) {
+        while (tok != NULL) {
+            tokens.push_back(tok);
+            tok = strtok(NULL, ", \n");
+        }
+    }
+    else {
+        while (tok != NULL) {
+            tokens.push_back(tok);
+            tok = strtok(NULL, " \n");
+        }
+    }
+    return tokens;
+}

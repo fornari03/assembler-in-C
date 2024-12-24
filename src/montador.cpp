@@ -149,7 +149,7 @@ void assemble(char *file_name) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]].first));
-                                reloc_bit_map.push_back("1");
+                                    reloc_bit_map.push_back("1");
                                 if (symbol_table[tokens[i]].second) {
                                     // se é externo, adiciona na use_table
                                     if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
@@ -166,7 +166,7 @@ void assemble(char *file_name) {
                                 string number = ptr + 1;
                                 if (symbol_table.find(symbol) != symbol_table.end()) {
                                     obj_code.push_back(int_to_string(symbol_table[symbol].first + atoi(number.c_str())));
-                                    reloc_bit_map.push_back("1");
+                                        reloc_bit_map.push_back("1");
                                     if (symbol_table[symbol].second) {
                                         // se é externo, adiciona na use_table
                                         if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
@@ -249,24 +249,6 @@ void assemble(char *file_name) {
         write_file(obj_file, (char*)obj_code[i].c_str());
         write_file(obj_file, space);
     }
-}
-
-vector<char*> split_line(char *line) {
-    vector<char*> tokens;
-    char *tok = strtok(line, " \n");
-    if (!strcmp(to_upper(tok), (char*)"COPY")) {
-        while (tok != NULL) {
-            tokens.push_back(tok);
-            tok = strtok(NULL, ", \n");
-        }
-    }
-    else {
-        while (tok != NULL) {
-            tokens.push_back(tok);
-            tok = strtok(NULL, " \n");
-        }
-    }
-    return tokens;
 }
 
 bool validate_symbol(char *symbol, bool is_label) {

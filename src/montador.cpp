@@ -121,6 +121,9 @@ void assemble(char *file_name) {
     }
 
 
+
+
+
     // SEGUNDA PASSAGEM
     file = open_file(file_name);
     linha = NULL;
@@ -128,6 +131,7 @@ void assemble(char *file_name) {
     contador_posicao = 0;
     contador_linha = 1;
     vector<string> obj_code;
+    vector<pair<string, int>> use_table;
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
@@ -143,6 +147,13 @@ void assemble(char *file_name) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]].first));
+                                if (symbol_table[tokens[i]].second) {
+                                    // se é externo, adiciona na use_table
+                                    if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
+                                        use_table.push_back(make_pair(tokens[i], contador_posicao - 2));
+                                    else
+                                        use_table.push_back(make_pair(tokens[i], contador_posicao - 1));
+                                }
                                 //printf("symbol_table[%s]: %d\n", tokens[i], symbol_table[tokens[i]]);
                             }
                             else if (strchr(tokens[i], '+')) {
@@ -152,6 +163,13 @@ void assemble(char *file_name) {
                                 string number = ptr + 1;
                                 if (symbol_table.find(symbol) != symbol_table.end()) {
                                     obj_code.push_back(int_to_string(symbol_table[symbol].first + atoi(number.c_str())));
+                                    if (symbol_table[symbol].second) {
+                                        // se é externo, adiciona na use_table
+                                        if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
+                                            use_table.push_back(make_pair(symbol, contador_posicao - 2));
+                                        else
+                                            use_table.push_back(make_pair(symbol, contador_posicao - 1));
+                                    }
                                 }
                                 else {
                                     printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
@@ -186,6 +204,10 @@ void assemble(char *file_name) {
             }
         }   
         contador_linha++;
+    }
+
+    for (size_t i = 0; i < use_table.size(); i++) {
+        printf("use_table[%s]: %d\n", use_table[i].first.c_str(), use_table[i].second);
     }
 
     FILE *obj_file = create_file(obj_file_name);

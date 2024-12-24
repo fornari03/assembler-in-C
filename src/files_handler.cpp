@@ -13,6 +13,10 @@ int check_file_extension(char *file) {
         return 2;
     }
 
+    else if (strcmp(extensao, ".obj") == 0) {
+        return 3;
+    }
+
     else {
         return 0;
     }

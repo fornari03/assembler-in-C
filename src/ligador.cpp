@@ -1,6 +1,12 @@
 #include <stdio.h>
+#include <vector>
+#include <map>
+#include <string>
 #include "ligador.h"
 #include "files_handler.h"
+#include "utils.h"
+
+using namespace std;
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -24,13 +30,63 @@ int main(int argc, char *argv[]) {
 
 
 void link (char** files_names) {
+    map<string, int> global_definition_table;
+    vector<pair<string, int>> global_use_table;
+    vector<int> fator_correcao = {0};
+    vector<string> global_reloc_bit_map;
+    vector<int> linked_code;
+
     for (int i = 0; files_names[i] != NULL; i++) {
         FILE *file = open_file(files_names[i]);
         char *line = NULL;
         size_t len = 0;
         while (getline(&line, &len, file) != -1) {
-            continue;
-            // TODO: implementar ligação
+            if (line[0] == 'D') {
+                vector<char*> label_def = split_line(line);
+                global_definition_table[label_def[1]] = atoi(label_def[2])+fator_correcao[i]; // ja aplica o fator de correção na tabela de definições
+            }
+            else if (line[0] == 'U') {
+                vector<char*> symbol_use = split_line(line);
+                global_use_table.push_back(make_pair(symbol_use[1], atoi(symbol_use[2])+fator_correcao[i])); // ja aplica o fator de correção na tabela de uso
+            }
+            else if (line[0] == 'R') {
+                vector<char*> nums = split_line(line);
+                for (size_t i = 1; i < nums.size(); i++) {
+                    global_reloc_bit_map.push_back(nums[i]);
+                }
+            }
+            else {
+                vector<char*> nums = split_line(line);
+                fator_correcao.push_back((int)nums.size());
+                for (size_t i = 0; i < nums.size(); i++) {
+                    if (global_reloc_bit_map[i] == "1") {
+                        linked_code.push_back(atoi(nums[i])+fator_correcao[i]); // ja aplica o fator de correção pra endereços relativos
+                    }
+                    else
+                        linked_code.push_back(atoi(nums[i]));
+                }
+            }
         }
     }
+    fator_correcao.pop_back();
+
+    for (int i = 0; files_names[i] != NULL; i++) {
+        printf("Fator de correção %s: %d\n", files_names[i], fator_correcao[i]);
+    }
+
+    for (auto use : global_use_table) {
+        linked_code[use.second] = global_definition_table[use.first];
+    }
+
+    char ext[] = ".e";
+    char *linked_file_name = change_file_extension(files_names[0], ext);
+    FILE *linked_file = create_file(linked_file_name);
+
+    char space[] = " ";
+    for (int num : linked_code) {
+        write_file(linked_file, int_to_string(num));
+        write_file(linked_file, space);
+    }
+
+    fclose(linked_file);
 }

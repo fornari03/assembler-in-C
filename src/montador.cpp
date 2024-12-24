@@ -132,6 +132,7 @@ void assemble(char *file_name) {
     contador_linha = 1;
     vector<string> obj_code;
     vector<pair<string, int>> use_table;
+    vector<string> reloc_bit_map;
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
@@ -142,11 +143,13 @@ void assemble(char *file_name) {
                 contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
                 if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
                     obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
+                    reloc_bit_map.push_back("0");
                     for (size_t i = 1; i < tokens.size(); i++) {
                         if (validate_symbol(tokens[i], false)) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]].first));
+                                reloc_bit_map.push_back("1");
                                 if (symbol_table[tokens[i]].second) {
                                     // se é externo, adiciona na use_table
                                     if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
@@ -163,6 +166,7 @@ void assemble(char *file_name) {
                                 string number = ptr + 1;
                                 if (symbol_table.find(symbol) != symbol_table.end()) {
                                     obj_code.push_back(int_to_string(symbol_table[symbol].first + atoi(number.c_str())));
+                                    reloc_bit_map.push_back("1");
                                     if (symbol_table[symbol].second) {
                                         // se é externo, adiciona na use_table
                                         if (i == 1 && INSTRUCTIONS_TABLE[tokens[0]].second == 3)
@@ -197,6 +201,9 @@ void assemble(char *file_name) {
                     contador_posicao += get_directive_size(tokens);
                     vector<char*> obj = execute_directive(tokens);
                     obj_code.insert(obj_code.end(), obj.begin(), obj.end());
+                    for (size_t i = 0; i < obj.size(); i++) {
+                        reloc_bit_map.push_back("0");
+                    }
                 }
                 else {
                     printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
@@ -208,10 +215,36 @@ void assemble(char *file_name) {
 
     for (size_t i = 0; i < use_table.size(); i++) {
         printf("use_table[%s]: %d\n", use_table[i].first.c_str(), use_table[i].second);
-    }
+    }   
 
     FILE *obj_file = create_file(obj_file_name);
     char space[] = " ";
+    char new_line[] = "\n";
+    if (is_module) {
+        char d[] = "D, ";
+        for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
+            write_file(obj_file, d);
+            write_file(obj_file, (char*)it->first.c_str());
+            write_file(obj_file, space);
+            write_file(obj_file, int_to_string(it->second));
+            write_file(obj_file, new_line);
+        }
+        char u[] = "U, ";
+        for (size_t i = 0; i < use_table.size(); i++) {
+            write_file(obj_file, u);
+            write_file(obj_file, (char*)use_table[i].first.c_str());
+            write_file(obj_file, space);
+            write_file(obj_file, int_to_string(use_table[i].second));
+            write_file(obj_file, new_line);
+        }
+        char r[] = "R, ";
+        write_file(obj_file, r);
+        for (size_t i = 0; i < reloc_bit_map.size(); i++) {
+            write_file(obj_file, (char*)reloc_bit_map[i].c_str());
+            write_file(obj_file, space);
+        }
+        write_file(obj_file, new_line);
+    }
     for (size_t i = 0; i < obj_code.size(); i++) {
         write_file(obj_file, (char*)obj_code[i].c_str());
         write_file(obj_file, space);

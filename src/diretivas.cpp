@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "errors_handler.h"
 
 bool is_directive(char *token) {
     token = to_upper(token);
@@ -42,7 +43,7 @@ int get_directive_size(vector<char*> tokens) {
     return -10000;
 }
 
-vector<char*> execute_directive(vector<char*> tokens) {
+vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
     vector<char*> code_obj;
     char* token = to_upper(tokens[0]);
     if (!strcmp(token, "SPACE")) {
@@ -65,8 +66,7 @@ vector<char*> execute_directive(vector<char*> tokens) {
             else {
                 arg = atoi(tokens[1]);
                 if (arg == 0 && tokens[1][0] != '0') {
-                    printf("ERRO SINTÁTICO: CONST tem que ser numérico\n");
-                    // TODO: erro sintático
+                    throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: operando inválido");
                 }
                 else {
                     code_obj.push_back(tokens[1]);
@@ -74,8 +74,7 @@ vector<char*> execute_directive(vector<char*> tokens) {
             }
         }
         else {
-            printf("ERRO SINTÁTICO: quantidade de argumentos de CONST errada\n");
-            // TODO: erro sintático
+            throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
         }
     }
 

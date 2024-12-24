@@ -10,6 +10,7 @@
 #include "opcodes.h"
 #include "diretivas.h"
 #include "utils.h"
+#include "errors_handler.h"
 
 using namespace std;
 
@@ -61,24 +62,20 @@ void assemble(char *file_name) {
                     symbol_table[label].first = contador_posicao;
                     if (is_extern(tokens[1]) && is_module)
                         symbol_table[label].second = true;
-                        // ISSUE: considerar um continue aqui
                 }
                 else {
-                    printf("ERRO SEMÂNTICO (label redefinida): linha %d\n", contador_linha);
-                    // TODO: erro semântico
+                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label redefinida");
                 }
             }
             else {
-                printf("ERRO SEMÂNTICO: linha %d\n", contador_linha);
-                // TODO: erro semântico
+                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label inválida");
             }
             tokens.erase(tokens.begin());
         }
         if (tokens.size() > 0) { // se linha não é só a label
             tokens[0] = to_upper(tokens[0]);
             if (is_label(tokens[0])) {
-                printf("ERRO SINTÁTICO (label dobrada na mesma linha): linha %d\n", contador_linha);
-                // TODO: erro sintático
+                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: label dobrada na mesma linha");
             }
             else {
                 if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
@@ -95,8 +92,7 @@ void assemble(char *file_name) {
                         }
                     }
                     else {
-                        printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
-                        // TODO: erro sintático
+                        throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
                     }
                 }
             }
@@ -171,37 +167,33 @@ void assemble(char *file_name) {
                                     }
                                 }
                                 else {
-                                    printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
-                                    // TODO: erro semântico
+                                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
                                 }
                             }
                             else {
-                                printf("ERRO SEMÂNTICO (símbolo não definido): linha %d\n", contador_linha);
-                                // TODO: erro semântico
+                                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
                             }
                         }
                         else {
-                            printf("ERRO LÉXICO (símbolo inválido): linha %d\n", contador_linha);
-                            // TODO: erro léxico
+                            throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: símbolo inválido");
                         }
                     }
                 }
                 else {
-                    printf("ERRO SINTÁTICO (número de operandos incorreto): linha %d\n", contador_linha);
-                    // TODO: erro sintático
+                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: número de operandos incorreto");
                 }
             }
             else {
                 if (is_directive(tokens[0])) {
                     contador_posicao += get_directive_size(tokens);
-                    vector<char*> obj = execute_directive(tokens);
+                    vector<char*> obj = execute_directive(tokens, &contador_linha);
                     obj_code.insert(obj_code.end(), obj.begin(), obj.end());
                     for (size_t i = 0; i < obj.size(); i++) {
                         reloc_bit_map.push_back("0");
                     }
                 }
                 else {
-                    printf("ERRO SINTÁTICO (operação não existe): linha %d\n", contador_linha);
+                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
                 }
             }
         }   

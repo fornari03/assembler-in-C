@@ -9,6 +9,6 @@ bool is_begin(char *token);
 bool is_extern(char *token);
 bool is_public(char *token);
 int get_directive_size(vector<char*> tokens);
-vector<char*> execute_directive(vector<char*> tokens);
+vector<char*> execute_directive(vector<char*> tokens, int *contador_linha);
 
 #endif

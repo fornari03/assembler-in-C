@@ -149,6 +149,9 @@ void assemble(char *file_name) {
                             tokens[i] = to_upper(tokens[i]);
                             if (symbol_table.find(tokens[i]) != symbol_table.end()) {
                                 obj_code.push_back(int_to_string(symbol_table[tokens[i]].first));
+                                if (symbol_table[tokens[i]].second)
+                                    reloc_bit_map.push_back("0");
+                                else 
                                     reloc_bit_map.push_back("1");
                                 if (symbol_table[tokens[i]].second) {
                                     // se é externo, adiciona na use_table
@@ -166,6 +169,9 @@ void assemble(char *file_name) {
                                 string number = ptr + 1;
                                 if (symbol_table.find(symbol) != symbol_table.end()) {
                                     obj_code.push_back(int_to_string(symbol_table[symbol].first + atoi(number.c_str())));
+                                    if (symbol_table[symbol].second)
+                                        reloc_bit_map.push_back("0");
+                                    else 
                                         reloc_bit_map.push_back("1");
                                     if (symbol_table[symbol].second) {
                                         // se é externo, adiciona na use_table

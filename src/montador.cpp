@@ -14,15 +14,14 @@
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    // TODO: argc deve ser usado para a ligação
     if (argc != 2) {
-        printf("tem que passar um arquivo .asm ou .pre\n");
+        printf("tem que passar só 1 arquivo .asm ou .pre\n");
         return 1;
     }
 
     char *file_name = argv[1];
 
-    int extensao = check_file_extension(file_name); // 1 = .asm, 2 = .pre, 0 = inválido
+    int extensao = check_file_extension(file_name); // 1 = .asm, 2 = .pre, 3 e 0 = inválido
 
     if (extensao == 1) pre_process(file_name);
 
@@ -112,15 +111,6 @@ void assemble(char *file_name) {
     }
 
 
-    for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
-        printf("definition_table[%s]: %d\n", it->first.c_str(), it->second);
-    }
-
-    for (auto it = symbol_table.begin(); it != symbol_table.end(); it++) {
-        printf("symbol_table[%s]: %d, %d\n", it->first.c_str(), it->second.first, it->second.second);
-    }
-
-
 
 
 
@@ -160,7 +150,6 @@ void assemble(char *file_name) {
                                     else
                                         use_table.push_back(make_pair(tokens[i], contador_posicao - 1));
                                 }
-                                //printf("symbol_table[%s]: %d\n", tokens[i], symbol_table[tokens[i]]);
                             }
                             else if (strchr(tokens[i], '+')) {
                                 char *ptr = strchr(tokens[i], '+');
@@ -217,11 +206,7 @@ void assemble(char *file_name) {
             }
         }   
         contador_linha++;
-    }
-
-    for (size_t i = 0; i < use_table.size(); i++) {
-        printf("use_table[%s]: %d\n", use_table[i].first.c_str(), use_table[i].second);
-    }   
+    }  
 
     FILE *obj_file = create_file(obj_file_name);
     char space[] = " ";

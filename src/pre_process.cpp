@@ -30,26 +30,22 @@ void pre_process(char *file_name) {
         size_t next_len = 0;
 
         if (strstr(to_upper(linha), section_text) && !sections_found) {
-            printf("section text found\n");
             sections_found = true;
             continue;
         }
 
         if (strstr(to_upper(linha), section_data) && !sections_found) {
-            printf("section data found\n");
             sections_found = true;
             data_first = true;
             continue;
         }
 
         if (data_first && !strstr(to_upper(linha), section_text) && !section_text_found) {
-            printf("data line found\n");
             char *aux = new char[strlen(linha) + 1];
             strcpy(aux, linha);
             data_lines.push_back(aux);
         }
         else {
-            printf("else\n");
             if (strstr(to_upper(linha), section_text)) {
                 section_text_found = true;
                 continue;
@@ -73,9 +69,7 @@ void pre_process(char *file_name) {
 
     if (data_first) {
         for (size_t i = 0; i < data_lines.size(); i++) {
-            printf("%s\n", linha);
             linha = remove_comments(data_lines[i]);
-            printf("%s\n", linha);
             linha = remove_spaces(linha, data_lines.size()-1 == i);
             if (!isspace(*linha)) write_file(pre_file, linha);
         }

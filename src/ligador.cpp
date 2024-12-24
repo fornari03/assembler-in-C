@@ -71,10 +71,6 @@ void link (char** files_names) {
     }
     fator_correcao.pop_back();
 
-    for (int i = 0; files_names[i] != NULL; i++) {
-        printf("Fator de correção %s: %d\n", files_names[i], fator_correcao[i]);
-    }
-
     for (auto use : global_use_table) {
         linked_code[use.second] += global_definition_table[use.first];
     }

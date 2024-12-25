@@ -80,13 +80,9 @@ void pre_process(char *file_name) {
                 macro_name_table[macro_name] = macro_definition_table.size();
                 continue;
             }
-
-            // TODO: LEMBRAR DE MACRO CHAMANDO MACRO
-            // TODO: lembrar de colocar tudo to_upper()
             if (macro) {
                 linha = remove_comments(linha);
                 linha = remove_spaces(linha, last_line);
-                //if (is_macro_call(linha)) {expand_macro();}
                 if (!isspace(*linha)) {
                     char* copy = strdup(linha);
                     macro_definition_table.push_back(copy);
@@ -97,7 +93,6 @@ void pre_process(char *file_name) {
             linha = remove_spaces(linha, last_line);
             if (!isspace(*linha) && is_macro_call(linha)) {
                 char* copy = strdup(linha);
-                printf("linha: %s", linha);
                 expand_macro(pre_file, copy);
             }
             else if (!isspace(*linha)) write_file(pre_file, linha);
@@ -187,9 +182,15 @@ char* remove_comments(char *str) {
 }
 
 void expand_macro(FILE *file, char *line) {
-    line[strlen(line)-1] = '\0';
-    for (int i = macro_name_table[to_upper(line)]; strcmp(to_upper(macro_definition_table[i]), (char*)"ENDMACRO\n"); i++)
-        write_file(file, macro_definition_table[i]);
+    if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0';
+    for (int i = macro_name_table[to_upper(line)]; strcmp(to_upper(macro_definition_table[i]), (char*)"ENDMACRO\n"); i++) {
+        if (is_macro_call(to_upper(macro_definition_table[i]))) {
+            char* copy = strdup(macro_definition_table[i]);
+            expand_macro(file, copy);
+        }
+        else
+            write_file(file, macro_definition_table[i]);
+    }
 
 }
 

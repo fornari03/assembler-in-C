@@ -1,12 +1,16 @@
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
 #include "pre_process.h"
 #include "files_handler.h"
 #include "utils.h"
 #include <vector>
+#include <map>
+#include <string>
 
 using namespace std;
+
+map<string, int> macro_name_table;
+vector<char*> macro_definition_table = {(char*)""};
 
 void pre_process(char *file_name) {
     FILE *file = open_file(file_name);
@@ -23,6 +27,7 @@ void pre_process(char *file_name) {
     bool data_first = false;
     bool section_text_found = false;
     vector<char*> data_lines;
+    bool macro = false;
 
     while (getline(&linha, &len, file) != -1) {
         off_t current_pos = ftell(file);
@@ -60,9 +65,42 @@ void pre_process(char *file_name) {
                 fseek(file, current_pos, SEEK_SET);
             free(next_line);
 
+            if (is_end_macro(linha)) {
+                macro = false;
+                char* copy = strdup(linha);
+                macro_definition_table.push_back(copy);
+                continue;
+            }
+            if (is_macro(linha)) {
+                macro = true;
+                char *ptr = linha;
+                while (*++ptr != ':') {}
+                *ptr = '\0';
+                string macro_name = to_upper(linha);
+                macro_name_table[macro_name] = macro_definition_table.size();
+                continue;
+            }
+
+            // TODO: LEMBRAR DE MACRO CHAMANDO MACRO
+            // TODO: lembrar de colocar tudo to_upper()
+            if (macro) {
+                linha = remove_comments(linha);
+                linha = remove_spaces(linha, last_line);
+                //if (is_macro_call(linha)) {expand_macro();}
+                if (!isspace(*linha)) {
+                    char* copy = strdup(linha);
+                    macro_definition_table.push_back(copy);
+                }
+                continue;
+            }
             linha = remove_comments(linha);
             linha = remove_spaces(linha, last_line);
-            if (!isspace(*linha)) write_file(pre_file, linha);
+            if (!isspace(*linha) && is_macro_call(linha)) {
+                char* copy = strdup(linha);
+                printf("linha: %s", linha);
+                expand_macro(pre_file, copy);
+            }
+            else if (!isspace(*linha)) write_file(pre_file, linha);
         }
 
     }
@@ -80,10 +118,6 @@ void pre_process(char *file_name) {
 
     fclose(file);
     fclose(pre_file);
-}
-
-void expand_macros(char *file) {
-
 }
 
 char* remove_spaces(char *str, bool last_line) {
@@ -150,4 +184,26 @@ char* remove_comments(char *str) {
     }
 
     return str;
+}
+
+void expand_macro(FILE *file, char *line) {
+    line[strlen(line)-1] = '\0';
+    for (int i = macro_name_table[to_upper(line)]; strcmp(to_upper(macro_definition_table[i]), (char*)"ENDMACRO\n"); i++)
+        write_file(file, macro_definition_table[i]);
+
+}
+
+bool is_macro(char *str) {
+    return strstr(to_upper(str), "MACRO");
+}
+
+bool is_macro_call(char *str) {
+    char* copy = strdup(str);
+    if (copy[strlen(copy)-1] == '\n') copy[strlen(copy)-1] = '\0';
+    string s = to_upper(copy);
+    return macro_name_table.find(to_upper(copy)) != macro_name_table.end();
+}
+
+bool is_end_macro(char *str) {
+    return strstr(to_upper(str), "ENDMACRO");
 }

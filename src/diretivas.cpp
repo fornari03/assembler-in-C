@@ -47,13 +47,17 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
     vector<char*> code_obj;
     char* token = to_upper(tokens[0]);
     if (!strcmp(token, "SPACE")) {
-        if (tokens.size() > 1) {
+        if (tokens.size() == 1) {
+            code_obj.push_back((char*)"0");
+        }
+        else if (tokens.size() == 2) {
             for (int i = 0; i < atoi(tokens[1]); i++) {
                 code_obj.push_back((char*)"0");
             }
         }
         else {
-            code_obj.push_back((char*)"0");
+            // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 0 ou 1, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size()-1);
         }
     }
     else if (!strcmp(token, "CONST")) {
@@ -66,7 +70,8 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
             else {
                 arg = atoi(tokens[1]);
                 if (arg == 0 && tokens[1][0] != '0') {
-                    throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: operando inválido");
+                    // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: operando inválido");
+                    printf("(Linha %d) ERRO SINTÁTICO: operando inválido \"%s\"\n", *contador_linha, tokens[1]);
                 }
                 else {
                     code_obj.push_back(tokens[1]);
@@ -74,7 +79,8 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
             }
         }
         else {
-            throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 1, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size()-1);
         }
     }
 

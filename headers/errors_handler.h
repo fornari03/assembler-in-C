@@ -2,7 +2,6 @@
 #define ERRORS_HANDLER_H
 
 // identificar erro, linha e tipo do erro (lexico, sintatico, semantico)
-#include <iostream>
 #include <exception>
 #include <string>
 using namespace std;

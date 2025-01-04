@@ -1,8 +1,6 @@
 #include <string.h>
 #include "diretivas.h"
 #include "utils.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include "errors_handler.h"
 
 bool is_directive(char *token) {

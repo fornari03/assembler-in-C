@@ -1,16 +1,10 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include <map>
-#include <string>
 #include "montador.h"
 #include "pre_process.h"
 #include "files_handler.h"
 #include "opcodes.h"
 #include "diretivas.h"
 #include "utils.h"
-#include "errors_handler.h"
 
 using namespace std;
 

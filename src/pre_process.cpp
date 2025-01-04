@@ -1,9 +1,7 @@
-#include <stdlib.h>
 #include <string.h>
 #include "pre_process.h"
 #include "files_handler.h"
 #include "utils.h"
-#include <vector>
 #include <map>
 #include <string>
 

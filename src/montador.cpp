@@ -68,21 +68,24 @@ void assemble(char *file_name) {
                         symbol_table[label].second = true;
                 }
                 else {
-                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label redefinida");
+                    // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                    // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label redefinida");
+                    printf("(Linha %d) ERRO SEMÂNTICO: rótulo redefinido \"%s\"\n", contador_linha, label.c_str());
                 }
             }
             else {
-                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label inválida");
+                // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: label inválida");
+                printf("(Linha %d) ERRO LÉXICO: rótulo inválido \"%s\"\n", contador_linha, tokens[0]);
             }
             tokens.erase(tokens.begin());
         }
         if (tokens.size() > 0) { // se linha não é só a label
             tokens[0] = to_upper(tokens[0]);
             if (is_label(tokens[0])) {
-                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: label dobrada na mesma linha");
+                // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: label dobrada na mesma linha");
+                printf("(Linha %d) ERRO SINTÁTICO: rótulo dobrado na mesma linha \"%s\"\n", contador_linha, tokens[0]);
             }
             else {
                 if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
@@ -99,15 +102,17 @@ void assemble(char *file_name) {
                         }
                     }
                     else {
-                        if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                        throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
+                        // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                        // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
+                        printf("(Linha %d) ERRO SINTÁTICO: instrução ou diretiva inválida \"%s\"\n", contador_linha, tokens[0]);
                     }
                 }
             }
         }
         else {
-            if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-            throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+            // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+            // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+            printf("(Linha %d) ERRO SEMÂNTICO: rótulo não definido \"%s\"\n", contador_linha, tokens[0]);
         }
         contador_linha++;
     }
@@ -179,24 +184,28 @@ void assemble(char *file_name) {
                                     }
                                 }
                                 else {
-                                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+                                    // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                                    // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+                                    printf("(Linha %d) ERRO SEMÂNTICO: rótulo ausente \"%s\"\n", contador_linha, symbol.c_str());
                                 }
                             }
                             else {
-                                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                                throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+                                // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                                // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+                                printf("(Linha %d) ERRO SEMÂNTICO: rótulo ausente \"%s\"\n", contador_linha, tokens[i]);
                             }
                         }
                         else {
-                            if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                            throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: símbolo inválido");
+                            // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                            // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: símbolo inválido");
+                            printf("(Linha %d) ERRO LÉXICO: símbolo inválido \"%s\"\n", contador_linha, tokens[i]);
                         }
                     }
                 }
                 else {
-                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: número de operandos incorreto");
+                    // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                    // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: número de operandos incorreto");
+                    printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a instrução \"%s\". Esperado %d, encontrou %d\n", contador_linha, tokens[0], INSTRUCTIONS_TABLE[tokens[0]].second, (int)tokens.size()-1);
                 }
             }
             else {
@@ -207,10 +216,6 @@ void assemble(char *file_name) {
                     for (size_t i = 0; i < obj.size(); i++) {
                         reloc_bit_map.push_back("0");
                     }
-                }
-                else {
-                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
-                    throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
                 }
             }
         }   

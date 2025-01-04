@@ -83,7 +83,7 @@ void pre_process(char *file_name) {
             if (macro) {
                 linha = remove_comments(linha);
                 linha = remove_spaces(linha, last_line);
-                linha = is_just_label(linha);
+                linha = is_just_label(linha, last_line);
                 if (!isspace(*linha)) {
                     char* copy = strdup(linha);
                     macro_definition_table.push_back(copy);
@@ -92,7 +92,7 @@ void pre_process(char *file_name) {
             }
             linha = remove_comments(linha);
             linha = remove_spaces(linha, last_line);
-            linha = is_just_label(linha);
+            linha = is_just_label(linha, last_line);
             if (!isspace(*linha) && is_macro_call(linha)) {
                 char* copy = strdup(linha);
                 expand_macro(pre_file, copy);
@@ -106,7 +106,7 @@ void pre_process(char *file_name) {
         for (size_t i = 0; i < data_lines.size(); i++) {
             linha = remove_comments(data_lines[i]);
             linha = remove_spaces(linha, data_lines.size()-1 == i);
-            linha = is_just_label(linha);
+            linha = is_just_label(linha, data_lines.size()-1 == i);
             if (!isspace(*linha) && is_macro_call(linha)) {
                 char* copy = strdup(linha);
                 expand_macro(pre_file, copy);
@@ -216,10 +216,11 @@ bool is_end_macro(char *str) {
     return strstr(to_upper(str), "ENDMACRO");
 }
 
-char* is_just_label(char *str) {
+char* is_just_label(char *str, bool last_line) {
     for (char *ptr = str; *ptr != '\0' && *ptr != '\n'; ptr++) {
         if (*ptr == ':' && (*(ptr+1) == '\n' || *(ptr+1) == '\0')) {
-            *(ptr+1) = ' ';
+            if (!last_line) *(ptr+1) = ' ';
+            else *(ptr+1) = '\0';
             break;
         }
     }

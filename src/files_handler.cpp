@@ -63,3 +63,8 @@ FILE* create_file(char *file) {
 void write_file(FILE* file, char *code) {
     fputs(code, file);
 }   
+
+void delete_file(char *file) {
+    int ret = remove(file);
+    if (ret) printf("Erro em manuseio de arquivo\n");
+}

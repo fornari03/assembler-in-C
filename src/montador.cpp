@@ -26,7 +26,11 @@ int main(int argc, char *argv[]) {
 
     if (extensao == 1) pre_process(file_name);
 
-    else if (extensao == 2) assemble(file_name);
+    else if (extensao == 2) {
+        pre_process(file_name);
+        assemble(strcat(file_name, "1"));
+        delete_file(file_name);
+    }
 
     else if (!extensao) {
         printf("Formato do arquivo inválido\n");

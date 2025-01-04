@@ -20,6 +20,9 @@ void pre_process(char *file_name) {
 
     char ext[] = ".pre";
     char* pre_file_name = change_file_extension(file_name, ext);
+    if (!strcmp(pre_file_name, file_name)) {
+        strcat(pre_file_name, "1");
+    }
     FILE *pre_file = create_file(pre_file_name);
     char section_text[] = "SECTION TEXT";
     char section_data[] = "SECTION DATA";

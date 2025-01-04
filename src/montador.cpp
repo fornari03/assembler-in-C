@@ -127,7 +127,7 @@ void assemble(char *file_name) {
             tokens[0] = to_upper(tokens[0]);
             if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {
                 contador_posicao += INSTRUCTIONS_TABLE[tokens[0]].second;
-                if (tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
+                if ((int)tokens.size() == INSTRUCTIONS_TABLE[tokens[0]].second) {
                     obj_code.push_back(INSTRUCTIONS_TABLE[tokens[0]].first);
                     reloc_bit_map.push_back("0");
                     for (size_t i = 1; i < tokens.size(); i++) {

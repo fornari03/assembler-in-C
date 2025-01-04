@@ -160,6 +160,14 @@ char* remove_spaces(char *str, bool last_line) {
             *write++ = '+';
             space_found = true;
         }
+        else if (*read == ':') {
+            // tira todos espaços antes do :
+            while (write > str && isspace(*(write - 1))) {
+                write--;
+            }
+            *write++ = ':';
+            space_found = false;
+        }
         else {
             *write++ = *read;
             space_found = false;

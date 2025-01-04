@@ -28,12 +28,15 @@ char* int_to_string(int value) {
 
 vector<char*> split_line(char *line) {
     vector<char*> tokens;
+    bool erro = line[strlen(line)-2] == ',';
     char *tok = strtok(line, " \n");
     if (!strcmp(to_upper(tok), (char*)"COPY")) {
         while (tok != NULL) {
             tokens.push_back(tok);
             tok = strtok(NULL, ", \n");
         }
+        if (erro)
+            tokens[tokens.size()-1][strlen(tokens[tokens.size()-1])-1] = ',';
     }
     else {
         while (tok != NULL) {

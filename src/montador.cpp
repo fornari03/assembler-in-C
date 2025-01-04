@@ -68,10 +68,12 @@ void assemble(char *file_name) {
                         symbol_table[label].second = true;
                 }
                 else {
+                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                     throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label redefinida");
                 }
             }
             else {
+                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                 throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: label inválida");
             }
             tokens.erase(tokens.begin());
@@ -79,6 +81,7 @@ void assemble(char *file_name) {
         if (tokens.size() > 0) { // se linha não é só a label
             tokens[0] = to_upper(tokens[0]);
             if (is_label(tokens[0])) {
+                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                 throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: label dobrada na mesma linha");
             }
             else {
@@ -96,10 +99,15 @@ void assemble(char *file_name) {
                         }
                     }
                     else {
+                        if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                         throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
                     }
                 }
             }
+        }
+        else {
+            if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+            throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
         }
         contador_linha++;
     }
@@ -171,19 +179,23 @@ void assemble(char *file_name) {
                                     }
                                 }
                                 else {
+                                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                                     throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
                                 }
                             }
                             else {
+                                if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                                 throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
                             }
                         }
                         else {
+                            if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                             throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: símbolo inválido");
                         }
                     }
                 }
                 else {
+                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                     throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: número de operandos incorreto");
                 }
             }
@@ -197,6 +209,7 @@ void assemble(char *file_name) {
                     }
                 }
                 else {
+                    if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                     throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: operação não existe");
                 }
             }

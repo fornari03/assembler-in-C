@@ -37,26 +37,18 @@ char* change_file_extension(char *file, char *new_extension) {
 FILE* open_file(char *file) {
     FILE* opened_file = fopen(file, "r");
 
-    if (opened_file == NULL) {
-        printf("Erro\n");
-    }
+    if (opened_file == NULL)
+        printf("Erro em manuseio de arquivo\n");
 
-    else {
-        printf("Abriu arquivo %s\n", file);
-    }
     return opened_file;
 }
 
 FILE* create_file(char *file) {
     FILE* created_file = fopen(file, "w");
 
-    if (created_file == NULL) {
-        printf("Erro\n");
-    }
+    if (created_file == NULL)
+        printf("Erro em manuseio de arquivo\n");
 
-    else {
-        printf("Criou arquivo %s\n", file);
-    }
     return created_file;
 }
 

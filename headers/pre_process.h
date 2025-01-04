@@ -9,5 +9,6 @@ void expand_macro(FILE *file, char *line);
 bool is_macro(char *str);
 bool is_macro_call(char *str);
 bool is_end_macro(char *str);
+char* is_just_label(char *str);
 
 #endif

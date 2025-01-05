@@ -37,13 +37,13 @@ void pre_process(char *file_name) {
 
         if (strstr(to_upper(linha), section_text) && !sections_found) {
             sections_found = true;
-            continue;
+            // continue;
         }
 
         if (strstr(to_upper(linha), section_data) && !sections_found) {
             sections_found = true;
             data_first = true;
-            continue;
+            // continue;
         }
 
         if (data_first && !strstr(to_upper(linha), section_text) && !section_text_found) {
@@ -54,10 +54,10 @@ void pre_process(char *file_name) {
         else {
             if (strstr(to_upper(linha), section_text)) {
                 section_text_found = true;
-                continue;
+                // continue;
             }
             if (strstr(to_upper(linha), section_data)) {
-                continue;
+                // continue;
             }
             if (getline(&next_line, &next_len, file) == -1 && !data_first) {
                 last_line = true;

@@ -52,6 +52,10 @@ void assemble(char *file_name) {
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
+        if (!strcmp(to_upper(tokens[0]), "SECTION")) {
+            contador_linha++;
+            continue;
+        }
         if (is_label(tokens[0])) {
             if (validate_symbol(tokens[0], true)) {
                 tokens[0] = to_upper(tokens[0]);

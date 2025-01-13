@@ -60,9 +60,9 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
     }
     else if (!strcmp(token, "CONST")) {
         if (tokens.size() == 2) {
-            int arg;
+            short arg;
             if (strlen(tokens[1]) > 2 && tokens[1][0] == '0' && (tokens[1][1] == 'x' || tokens[1][1] == 'X')) {
-                arg = (int)strtol(tokens[1], NULL, 16);
+                arg = strtol(tokens[1], NULL, 16);
                 code_obj.push_back(int_to_string(arg));
             }
             else {

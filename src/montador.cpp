@@ -59,6 +59,7 @@ void assemble(char *file_name) {
         if (is_label(tokens[0])) {
             if (validate_symbol(tokens[0], true)) {
                 tokens[0] = to_upper(tokens[0]);
+                if (!strcmp(tokens[0], (char*)"BEGIN")) swap(tokens[0], tokens[1]);
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
                     symbol_table[label].first = contador_posicao;
@@ -137,7 +138,12 @@ void assemble(char *file_name) {
 
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
-        if (is_label(tokens[0])) tokens.erase(tokens.begin());
+        if (is_label(tokens[0])) {
+            tokens[0][strlen(tokens[0])-1] = '\0';
+            if (!strcmp(to_upper(tokens[0]), (char*)"BEGIN"))
+                swap(tokens[0], tokens[1]);
+            tokens.erase(tokens.begin());
+        }
         if (tokens.size() > 0) {
             tokens[0] = to_upper(tokens[0]);
             if (INSTRUCTIONS_TABLE.find(tokens[0]) != INSTRUCTIONS_TABLE.end()) {

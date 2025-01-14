@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/*Transforma todos os caracteres da cadeia em maiúsculo*/
 char* to_upper(char *str) {
     char *copy = (char*)malloc(strlen(str) + 1);
     for (size_t i = 0; str[i] != '\0'; i++) {
@@ -14,6 +15,7 @@ char* to_upper(char *str) {
     return copy;
 }
 
+/*Converte um inteiro para uma string (char*)*/
 char* int_to_string(int value) {
     size_t size = 12;
     char* buffer = (char*)malloc(size);
@@ -26,6 +28,7 @@ char* int_to_string(int value) {
     return buffer;
 }
 
+/*Quebra uma linha em tokens*/
 vector<char*> split_line(char *line) {
     vector<char*> tokens;
     bool erro = line[strlen(line)-2] == ',';

@@ -28,6 +28,7 @@ int main(int argc, char *argv[]) {
 }
 
 
+/*Realiza todo o processo de ligação dos programas .obj e cria um arquivo .e ligado*/
 void link (char** files_names) {
     map<string, int> global_definition_table;
     vector<pair<string, int>> global_use_table;

@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     else if (extensao == 2) {
         pre_process(file_name);
         assemble(strcat(file_name, "1"));
-        delete_file(file_name);
+        delete_file(file_name); // deleta o arquivo temporário
     }
 
     else if (!extensao) {
@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 }
 
 
+/*Realiza o processo todo de montagem do programa e cria o arquivo .obj*/
 void assemble(char *file_name) {
     FILE *file = open_file(file_name);
     char *linha = NULL; // ponteiro para a linha
@@ -53,13 +54,14 @@ void assemble(char *file_name) {
     while (getline(&linha, &len, file) != -1) {
         vector<char*> tokens = split_line(linha);
         if (!strcmp(to_upper(tokens[0]), "SECTION")) {
+            // se é SECTION, avança pra próxima linha
             contador_linha++;
             continue;
         }
         if (is_label(tokens[0])) {
             if (validate_symbol(tokens[0], true)) {
                 tokens[0] = to_upper(tokens[0]);
-                if (!strcmp(tokens[0], (char*)"BEGIN")) swap(tokens[0], tokens[1]);
+                if (!strcmp(tokens[0], (char*)"BEGIN")) swap(tokens[0], tokens[1]); // se é BEGIN, inverte a ordem com o próximo token
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
                     symbol_table[label].first = contador_posicao;
@@ -94,6 +96,7 @@ void assemble(char *file_name) {
                     if (is_directive(tokens[0])) {
                         contador_posicao += get_directive_size(tokens);
                         if (is_begin(tokens[0])) {
+                            // verifica que o arquivo é pra ser ligado
                             is_module = true;
                         }
                         else if (is_public(tokens[0])) {
@@ -118,6 +121,7 @@ void assemble(char *file_name) {
 
     fclose(file);
 
+    // atualiza os valores dos símbolos públicos
     for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
         definition_table[it->first] = symbol_table[it->first].first;
     }
@@ -141,8 +145,8 @@ void assemble(char *file_name) {
         if (is_label(tokens[0])) {
             tokens[0][strlen(tokens[0])-1] = '\0';
             if (!strcmp(to_upper(tokens[0]), (char*)"BEGIN"))
-                swap(tokens[0], tokens[1]);
-            tokens.erase(tokens.begin());
+                swap(tokens[0], tokens[1]); // se é BEGIN, inverte a ordem com o próximo token
+            tokens.erase(tokens.begin()); // apaga a label porque ela não tem importância na segunda passagem
         }
         if (tokens.size() > 0) {
             tokens[0] = to_upper(tokens[0]);
@@ -230,6 +234,7 @@ void assemble(char *file_name) {
     char space[] = " ";
     char new_line[] = "\n";
     if (is_module) {
+        // escreve a tabela de definição, uso e infos de relocação
         char d[] = "D, ";
         for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
             write_file(obj_file, d);
@@ -260,6 +265,7 @@ void assemble(char *file_name) {
     }
 }
 
+/*Valida o nome do símbolo, verificando se tem algum erro léxico*/
 bool validate_symbol(char *symbol, bool is_label) {
     if (is_label) {
         symbol[strlen(symbol) - 1] = '\0';
@@ -301,6 +307,7 @@ bool validate_symbol(char *symbol, bool is_label) {
 
 }
 
+/*Verifica se o token é uma label*/
 bool is_label(char *token) {
     return token[strlen(token) - 1] == ':';
 }

@@ -81,6 +81,24 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
             printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 1, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size()-1);
         }
     }
+    else if (!strcmp(token, "BEGIN") || !strcmp(token, "EXTERN")) {
+        if (tokens.size() != 1) {
+            // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 1, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size());
+        }
+    }
+    else if (!strcmp(token, "PUBLIC")) {
+        if (tokens.size() != 2) {
+            // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 1, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size()-1);
+        }
+    }
+    else if (!strcmp(token, "END")) {
+        if (tokens.size() != 1) {
+            // throw AssemblerError("(Linha " + to_string(*contador_linha) + ") ERRO SINTÁTICO: quantidade de operandos inválida");
+            printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a diretiva \"%s\". Esperado 0, encontrou %d\n", *contador_linha, tokens[0], (int)tokens.size()-1);
+        }
+    }
 
     return code_obj;
 }

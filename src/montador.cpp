@@ -63,6 +63,7 @@ void assemble(char *file_name) {
                 tokens[0] = to_upper(tokens[0]);
                 if (!strcmp(tokens[0], (char*)"BEGIN")) {
                     swap(tokens[0], tokens[1]); // se é BEGIN, inverte a ordem com o próximo token
+                    tokens[0] = to_upper(tokens[0]);
                     if (!validate_symbol(tokens[0], false)) {
                         // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                         // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: label inválida");

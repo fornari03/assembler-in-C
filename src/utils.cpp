@@ -44,7 +44,7 @@ vector<char*> split_line(char *line) {
     else {
         tokens.push_back(tok);
         tok = strtok(NULL, ", \n");
-        if (!strcmp(to_upper(tok), (char*)"COPY")) {
+        if (tok != NULL && !strcmp(to_upper(tok), (char*)"COPY")) {
             while (tok != NULL) {
                 tokens.push_back(tok);
                 tok = strtok(NULL, ", \n");

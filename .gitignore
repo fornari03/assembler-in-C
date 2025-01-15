@@ -1,0 +1,7 @@
+*.asm
+*.pre
+*.obj
+*.e
+ligador
+montador
+simulador

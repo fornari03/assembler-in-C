@@ -31,7 +31,7 @@ char* int_to_string(int value) {
 /*Quebra uma linha em tokens*/
 vector<char*> split_line(char *line) {
     vector<char*> tokens;
-    bool erro = line[strlen(line)-2] == ',';
+    bool erro = line[strlen(line)-1] == ',';
     char *tok = strtok(line, " \n");
     if (!strcmp(to_upper(tok), (char*)"COPY")) {
         while (tok != NULL) {

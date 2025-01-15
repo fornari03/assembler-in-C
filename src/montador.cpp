@@ -61,7 +61,14 @@ void assemble(char *file_name) {
         if (is_label(tokens[0])) {
             if (validate_symbol(tokens[0], true)) {
                 tokens[0] = to_upper(tokens[0]);
-                if (!strcmp(tokens[0], (char*)"BEGIN")) swap(tokens[0], tokens[1]); // se é BEGIN, inverte a ordem com o próximo token
+                if (!strcmp(tokens[0], (char*)"BEGIN")) {
+                    swap(tokens[0], tokens[1]); // se é BEGIN, inverte a ordem com o próximo token
+                    if (!validate_symbol(tokens[0], false)) {
+                        // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                        // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO LÉXICO: label inválida");
+                        printf("(Linha %d) ERRO LÉXICO: símbolo inválido \"%s\"\n", contador_linha, tokens[0]);
+                    }
+                }
                 string label = tokens[0];
                 if (symbol_table.find(label) == symbol_table.end()) {
                     symbol_table[label].first = contador_posicao;
@@ -212,13 +219,13 @@ void assemble(char *file_name) {
                 else {
                     // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                     // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SINTÁTICO: número de operandos incorreto");
-                    printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a instrução \"%s\". Esperado %d, encontrou %d\n", contador_linha, tokens[0], INSTRUCTIONS_TABLE[tokens[0]].second, (int)tokens.size()-1);
+                    printf("(Linha %d) ERRO SINTÁTICO: número de operandos incorreto para a instrução \"%s\". Esperado %d, encontrou %d\n", contador_linha, tokens[0], INSTRUCTIONS_TABLE[tokens[0]].second-1, (int)tokens.size()-1);
                 }
             }
             else {
                 if (is_directive(tokens[0])) {
                     if (!strcmp(tokens[0], (char*)"PUBLIC")) {
-                        if (symbol_table.find(to_upper(tokens[1])) == symbol_table.end())
+                        if ((int)tokens.size()>1 && symbol_table.find(to_upper(tokens[1])) == symbol_table.end())
                             // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
                             // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
                             printf("(Linha %d) ERRO SEMÂNTICO: rótulo ausente \"%s\"\n", contador_linha, tokens[1]);

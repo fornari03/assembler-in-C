@@ -68,6 +68,32 @@ vector<char*> execute_directive(vector<char*> tokens, int *contador_linha) {
         if (tokens.size() == 2) {
             short arg;
             if (strlen(tokens[1]) > 2 && tokens[1][0] == '0' && (tokens[1][1] == 'x' || tokens[1][1] == 'X')) {
+                if (strlen(tokens[1]) < 6) {
+                    tokens[1] = to_upper(tokens[1]);
+                    if (tokens[1][2] == '8' || tokens[1][2] == '9' || tokens[1][2] == 'A' || tokens[1][2] == 'B' || tokens[1][2] == 'C' || tokens[1][2] == 'D' || tokens[1][2] == 'E' || tokens[1][2] == 'F') {
+                        // adiciona F para completar 4 bytes
+                        char aux1f[10] = "F";
+                        char aux2f[10] = "FF";
+                        char aux3f[10] = "FFF";
+                        char hexa_ext[20] = "0x";
+
+                        char *modified_token = tokens[1] + 2;  // remove o "0x"
+
+                        if (strlen(modified_token) == 1) {
+                            strcat(aux3f, modified_token);
+                            strcat(hexa_ext, aux3f);
+                        }
+                        else if (strlen(modified_token) == 2) {
+                            strcat(aux2f, modified_token);
+                            strcat(hexa_ext, aux2f);
+                        }
+                        else {
+                            strcat(aux1f, modified_token);
+                            strcat(hexa_ext, aux1f);
+                        }
+                        tokens[1] = hexa_ext;
+                    }
+                }
                 arg = strtol(tokens[1], NULL, 16);
                 code_obj.push_back(int_to_string(arg));
             }

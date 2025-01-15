@@ -123,10 +123,9 @@ void assemble(char *file_name) {
 
     // atualiza os valores dos símbolos públicos
     for (auto it = definition_table.begin(); it != definition_table.end(); it++) {
-        definition_table[it->first] = symbol_table[it->first].first;
+        if (symbol_table.find(it->first) != symbol_table.end())
+            definition_table[it->first] = symbol_table[it->first].first;
     }
-
-
 
 
 
@@ -218,6 +217,12 @@ void assemble(char *file_name) {
             }
             else {
                 if (is_directive(tokens[0])) {
+                    if (!strcmp(tokens[0], (char*)"PUBLIC")) {
+                        if (symbol_table.find(to_upper(tokens[1])) == symbol_table.end())
+                            // if (file_name[strlen(file_name)-1] == '1') delete_file(file_name);
+                            // throw AssemblerError("(Linha " + to_string(contador_linha) + ") ERRO SEMÂNTICO: símbolo não definido");
+                            printf("(Linha %d) ERRO SEMÂNTICO: rótulo ausente \"%s\"\n", contador_linha, tokens[1]);
+                    }
                     contador_posicao += get_directive_size(tokens);
                     vector<char*> obj = execute_directive(tokens, &contador_linha);
                     obj_code.insert(obj_code.end(), obj.begin(), obj.end());

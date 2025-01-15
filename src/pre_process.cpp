@@ -10,6 +10,7 @@ using namespace std;
 map<string, int> macro_name_table;
 vector<char*> macro_definition_table = {(char*)""};
 
+/*Realiza todo o processo de pré-processamento do programa .asm e cria um arquivo .pre*/
 void pre_process(char *file_name) {
     FILE *file = open_file(file_name);
     char *linha = NULL; // ponteiro para a linha

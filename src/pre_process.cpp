@@ -36,6 +36,10 @@ void pre_process(char *file_name) {
         char *next_line = NULL;
         size_t next_len = 0;
 
+        linha = remove_comments(linha);
+        linha = remove_spaces(linha, last_line);
+        linha = is_just_label(linha, last_line);
+
         if (strstr(to_upper(linha), section_text) && !sections_found) {
             sections_found = true;
             // continue;
